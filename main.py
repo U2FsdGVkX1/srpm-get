@@ -20,9 +20,13 @@ async def main():
             print(f'No builds for package {package}')
             continue
         
-        # get latest build
+        # if there is already a noarch package
         response = requests.get('https://openkoji.iscas.ac.cn/koji/' + allbuild[0]['href'], verify=False)
         soup = BeautifulSoup(response.text, 'html.parser')
+        if soup.find('th', string='noarch'):
+            continue
+
+        # get latest build
         srpm = soup.find('a', string='download', href=re.compile('.+\.src\.rpm$'))
         if srpm is None:
             print(f'No srpm for package {package}')
